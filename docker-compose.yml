@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # PostgreSQL database service
   db:
@@ -10,11 +8,11 @@ services:
       POSTGRES_PASSWORD: expense_password
       POSTGRES_DB: expense_tracker
     ports:
-      - "5433:5432"  # Use 5433 on host to avoid conflict with local PostgreSQL
+      - "5433:5432" # Use 5433 on host to avoid conflict with local PostgreSQL
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U expense_user"]
+      test: ["CMD-SHELL", "pg_isready -U expense_user -d expense_tracker"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -68,4 +66,3 @@ volumes:
 networks:
   expense-tracker-network:
     driver: bridge
-
