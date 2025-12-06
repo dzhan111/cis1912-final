@@ -342,6 +342,119 @@ This application is designed for easy deployment with DevOps tools:
 - Check if database exists
 - Run `python init_db.py` to initialize tables
 
+## AWS Deployment with Terraform
+
+### Prerequisites
+
+- AWS account with appropriate permissions
+- Terraform installed (>= 1.0)
+- AWS CLI configured with credentials
+- Docker installed (for building images)
+
+### Infrastructure Setup
+
+1. **Navigate to terraform directory**
+   ```bash
+   cd terraform
+   ```
+
+2. **Create terraform.tfvars file**
+   ```bash
+   cp terraform.tfvars.example terraform.tfvars
+   # Edit terraform.tfvars with your values, especially db_password
+   ```
+
+3. **Initialize Terraform**
+   ```bash
+   terraform init
+   ```
+
+4. **Review the plan**
+   ```bash
+   terraform plan
+   ```
+
+5. **Apply infrastructure**
+   ```bash
+   terraform apply
+   ```
+
+6. **Get outputs (ALB DNS, ECR URLs)**
+   ```bash
+   terraform output
+   ```
+
+### Deploying Application Images
+
+After infrastructure is created:
+
+1. **Login to ECR**
+   ```bash
+   aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <account-id>.dkr.ecr.us-east-1.amazonaws.com
+   ```
+
+2. **Build and push backend image**
+   ```bash
+   cd ../backend
+   docker build -t expense-tracker-backend .
+   docker tag expense-tracker-backend:latest <ecr-url>/expense-tracker-backend:latest
+   docker push <ecr-url>/expense-tracker-backend:latest
+   ```
+
+3. **Build and push frontend image**
+   ```bash
+   cd ../frontend
+   docker build -t expense-tracker-frontend .
+   docker tag expense-tracker-frontend:latest <ecr-url>/expense-tracker-frontend:latest
+   docker push <ecr-url>/expense-tracker-frontend:latest
+   ```
+
+4. **Force ECS service update**
+   ```bash
+   aws ecs update-service --cluster expense-tracker-cluster --service expense-tracker-backend-service --force-new-deployment
+   aws ecs update-service --cluster expense-tracker-cluster --service expense-tracker-frontend-service --force-new-deployment
+   ```
+
+### CI/CD with GitHub Actions
+
+1. **Set up GitHub Secrets**
+   - Go to your repository Settings → Secrets and variables → Actions
+   - Add the following secrets:
+     - `AWS_ACCESS_KEY_ID`
+     - `AWS_SECRET_ACCESS_KEY`
+
+2. **Push to main branch**
+   - The workflow will automatically:
+     - Build Docker images
+     - Push to ECR
+     - Deploy to ECS
+
+3. **Access your application**
+   - Get the ALB DNS name from Terraform outputs
+   - Access at: `http://<alb-dns-name>`
+
+### Terraform Resources Created
+
+- **ECS Cluster** - Fargate cluster for containers
+- **ECR Repositories** - Container registries for backend and frontend
+- **ECS Services** - Backend and frontend services
+- **RDS PostgreSQL** - Database instance (db.t3.micro)
+- **Application Load Balancer** - Routes traffic to services
+- **Security Groups** - Network security rules
+- **IAM Role** - Task execution role for ECS
+
+### Cost Estimate
+
+- RDS db.t3.micro: ~$15/month
+- ECS Fargate (2 tasks): ~$15/month
+- ALB: ~$16/month
+- **Total: ~$46/month**
+
+**Important:** Destroy resources when not in use:
+```bash
+terraform destroy
+```
+
 ## License
 
 This project is created for educational purposes as part of CIS1912 DevOps course.
