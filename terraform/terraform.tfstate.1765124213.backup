@@ -1,7 +1,7 @@
 {
   "version": 4,
   "terraform_version": "1.5.7",
-  "serial": 51,
+  "serial": 19,
   "lineage": "00763721-1345-140f-7022-d25e8e666e15",
   "outputs": {
     "alb_dns_name": {
@@ -31,11 +31,6 @@
     "frontend_service_name": {
       "value": "expense-tracker-frontend-service",
       "type": "string"
-    },
-    "rds_endpoint": {
-      "value": "expense-tracker-db.cof4o8qk4ho3.us-east-1.rds.amazonaws.com:5432",
-      "type": "string",
-      "sensitive": true
     }
   },
   "resources": [
@@ -53,7 +48,7 @@
             "assign_ipv6_address_on_creation": false,
             "availability_zone": "us-east-1f",
             "availability_zone_id": "use1-az5",
-            "available_ip_address_count": 4088,
+            "available_ip_address_count": 4090,
             "cidr_block": "172.31.64.0/20",
             "customer_owned_ipv4_pool": "",
             "default_for_az": true,
@@ -152,7 +147,7 @@
             "assign_ipv6_address_on_creation": false,
             "availability_zone": "us-east-1b",
             "availability_zone_id": "use1-az6",
-            "available_ip_address_count": 4090,
+            "available_ip_address_count": 4091,
             "cidr_block": "172.31.32.0/20",
             "customer_owned_ipv4_pool": "",
             "default_for_az": true,
@@ -185,7 +180,7 @@
             "assign_ipv6_address_on_creation": false,
             "availability_zone": "us-east-1c",
             "availability_zone_id": "use1-az1",
-            "available_ip_address_count": 4089,
+            "available_ip_address_count": 4090,
             "cidr_block": "172.31.0.0/20",
             "customer_owned_ipv4_pool": "",
             "default_for_az": true,
@@ -218,7 +213,7 @@
             "assign_ipv6_address_on_creation": false,
             "availability_zone": "us-east-1a",
             "availability_zone_id": "use1-az4",
-            "available_ip_address_count": 4072,
+            "available_ip_address_count": 4073,
             "cidr_block": "172.31.16.0/20",
             "customer_owned_ipv4_pool": "",
             "default_for_az": true,
@@ -318,128 +313,69 @@
     },
     {
       "mode": "managed",
-      "type": "aws_db_instance",
-      "name": "main",
+      "type": "aws_cloudwatch_log_group",
+      "name": "backend",
       "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
       "instances": [
         {
-          "schema_version": 2,
+          "status": "tainted",
+          "schema_version": 0,
           "attributes": {
-            "address": "expense-tracker-db.cof4o8qk4ho3.us-east-1.rds.amazonaws.com",
-            "allocated_storage": 20,
-            "allow_major_version_upgrade": null,
-            "apply_immediately": false,
-            "arn": "arn:aws:rds:us-east-1:318035413014:db:expense-tracker-db",
-            "auto_minor_version_upgrade": true,
-            "availability_zone": "us-east-1a",
-            "backup_retention_period": 7,
-            "backup_target": "region",
-            "backup_window": "03:00-04:00",
-            "blue_green_update": [],
-            "ca_cert_identifier": "rds-ca-rsa2048-g1",
-            "character_set_name": "",
-            "copy_tags_to_snapshot": false,
-            "custom_iam_instance_profile": "",
-            "customer_owned_ip_enabled": false,
-            "database_insights_mode": "standard",
-            "db_name": "expense_tracker",
-            "db_subnet_group_name": "expense-tracker-db-subnet-group",
-            "dedicated_log_volume": false,
-            "delete_automated_backups": true,
-            "deletion_protection": false,
-            "domain": "",
-            "domain_auth_secret_arn": "",
-            "domain_dns_ips": [],
-            "domain_fqdn": "",
-            "domain_iam_role_name": "",
-            "domain_ou": "",
-            "enabled_cloudwatch_logs_exports": [],
-            "endpoint": "expense-tracker-db.cof4o8qk4ho3.us-east-1.rds.amazonaws.com:5432",
-            "engine": "postgres",
-            "engine_lifecycle_support": "open-source-rds-extended-support",
-            "engine_version": "15.14",
-            "engine_version_actual": "15.14",
-            "final_snapshot_identifier": "expense-tracker-final-snapshot-2025-12-07-1654",
-            "hosted_zone_id": "Z2R2ITUGPM61AM",
-            "iam_database_authentication_enabled": false,
-            "id": "db-PFE74IXQNFVQTPKZC3DJVWDJC4",
-            "identifier": "expense-tracker-db",
-            "identifier_prefix": "",
-            "instance_class": "db.t3.micro",
-            "iops": 3000,
+            "arn": "arn:aws:logs:us-east-1:318035413014:log-group:/ecs/expense-tracker-backend",
+            "id": "/ecs/expense-tracker-backend",
             "kms_key_id": "",
-            "latest_restorable_time": "",
-            "license_model": "postgresql-license",
-            "listener_endpoint": [],
-            "maintenance_window": "mon:04:00-mon:05:00",
-            "manage_master_user_password": null,
-            "master_user_secret": [],
-            "master_user_secret_kms_key_id": null,
-            "max_allocated_storage": 100,
-            "monitoring_interval": 0,
-            "monitoring_role_arn": "",
-            "multi_az": false,
-            "nchar_character_set_name": "",
-            "network_type": "IPV4",
-            "option_group_name": "default:postgres-15",
-            "parameter_group_name": "default.postgres15",
-            "password": "TOPSECRET_EXPENSE",
-            "password_wo": null,
-            "password_wo_version": null,
-            "performance_insights_enabled": false,
-            "performance_insights_kms_key_id": "",
-            "performance_insights_retention_period": 0,
-            "port": 5432,
-            "publicly_accessible": true,
-            "replica_mode": "",
-            "replicas": [],
-            "replicate_source_db": "",
-            "resource_id": "db-PFE74IXQNFVQTPKZC3DJVWDJC4",
-            "restore_to_point_in_time": [],
-            "s3_import": [],
-            "skip_final_snapshot": true,
-            "snapshot_identifier": null,
-            "status": "backing-up",
-            "storage_encrypted": false,
-            "storage_throughput": 125,
-            "storage_type": "gp3",
+            "log_group_class": "STANDARD",
+            "name": "/ecs/expense-tracker-backend",
+            "name_prefix": "",
+            "retention_in_days": 7,
+            "skip_destroy": false,
             "tags": {
               "Environment": "dev",
-              "Name": "expense-tracker-db",
+              "Name": "expense-tracker-backend-logs",
               "Project": "cis1912-final"
             },
             "tags_all": {
               "Environment": "dev",
-              "Name": "expense-tracker-db",
+              "Name": "expense-tracker-backend-logs",
+              "Project": "cis1912-final"
+            }
+          },
+          "sensitive_attributes": [],
+          "private": "bnVsbA=="
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_cloudwatch_log_group",
+      "name": "frontend",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "status": "tainted",
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:logs:us-east-1:318035413014:log-group:/ecs/expense-tracker-frontend",
+            "id": "/ecs/expense-tracker-frontend",
+            "kms_key_id": "",
+            "log_group_class": "STANDARD",
+            "name": "/ecs/expense-tracker-frontend",
+            "name_prefix": "",
+            "retention_in_days": 7,
+            "skip_destroy": false,
+            "tags": {
+              "Environment": "dev",
+              "Name": "expense-tracker-frontend-logs",
               "Project": "cis1912-final"
             },
-            "timeouts": null,
-            "timezone": "",
-            "upgrade_storage_config": null,
-            "username": "expense_user",
-            "vpc_security_group_ids": [
-              "sg-07a26f7dc6163a19d"
-            ]
+            "tags_all": {
+              "Environment": "dev",
+              "Name": "expense-tracker-frontend-logs",
+              "Project": "cis1912-final"
+            }
           },
-          "sensitive_attributes": [
-            [
-              {
-                "type": "get_attr",
-                "value": "username"
-              }
-            ],
-            [
-              {
-                "type": "get_attr",
-                "value": "password"
-              }
-            ]
-          ],
-          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjozMDAwMDAwMDAwMDAwLCJkZWxldGUiOjM2MDAwMDAwMDAwMDAsInVwZGF0ZSI6NDgwMDAwMDAwMDAwMH0sInNjaGVtYV92ZXJzaW9uIjoiMiJ9",
-          "dependencies": [
-            "aws_db_subnet_group.main",
-            "aws_security_group.rds"
-          ]
+          "sensitive_attributes": [],
+          "private": "bnVsbA=="
         }
       ]
     },
@@ -483,8 +419,7 @@
           "sensitive_attributes": [],
           "private": "bnVsbA==",
           "dependencies": [
-            "data.aws_subnets.default",
-            "data.aws_vpc.default"
+            "data.aws_subnets.default"
           ]
         }
       ]
@@ -579,371 +514,24 @@
     },
     {
       "mode": "managed",
-      "type": "aws_ecs_cluster",
-      "name": "main",
-      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
-      "instances": [
-        {
-          "schema_version": 0,
-          "attributes": {
-            "arn": "arn:aws:ecs:us-east-1:318035413014:cluster/expense-tracker-cluster",
-            "configuration": [],
-            "id": "arn:aws:ecs:us-east-1:318035413014:cluster/expense-tracker-cluster",
-            "name": "expense-tracker-cluster",
-            "service_connect_defaults": [],
-            "setting": [
-              {
-                "name": "containerInsights",
-                "value": "disabled"
-              }
-            ],
-            "tags": {
-              "Environment": "dev",
-              "Name": "expense-tracker-cluster",
-              "Project": "cis1912-final"
-            },
-            "tags_all": {
-              "Environment": "dev",
-              "Name": "expense-tracker-cluster",
-              "Project": "cis1912-final"
-            }
-          },
-          "sensitive_attributes": [],
-          "private": "bnVsbA=="
-        }
-      ]
-    },
-    {
-      "mode": "managed",
       "type": "aws_ecs_service",
       "name": "backend",
       "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
-      "instances": [
-        {
-          "schema_version": 1,
-          "attributes": {
-            "alarms": [],
-            "availability_zone_rebalancing": "DISABLED",
-            "capacity_provider_strategy": [],
-            "cluster": "arn:aws:ecs:us-east-1:318035413014:cluster/expense-tracker-cluster",
-            "deployment_circuit_breaker": [
-              {
-                "enable": false,
-                "rollback": false
-              }
-            ],
-            "deployment_controller": [
-              {
-                "type": "ECS"
-              }
-            ],
-            "deployment_maximum_percent": 200,
-            "deployment_minimum_healthy_percent": 100,
-            "desired_count": 1,
-            "enable_ecs_managed_tags": false,
-            "enable_execute_command": false,
-            "force_delete": null,
-            "force_new_deployment": null,
-            "health_check_grace_period_seconds": 0,
-            "iam_role": "/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS",
-            "id": "arn:aws:ecs:us-east-1:318035413014:service/expense-tracker-cluster/expense-tracker-backend-service",
-            "launch_type": "FARGATE",
-            "load_balancer": [
-              {
-                "container_name": "backend",
-                "container_port": 5000,
-                "elb_name": "",
-                "target_group_arn": "arn:aws:elasticloadbalancing:us-east-1:318035413014:targetgroup/expense-tracker-backend-tg/4edc73f62f3e4987"
-              }
-            ],
-            "name": "expense-tracker-backend-service",
-            "network_configuration": [
-              {
-                "assign_public_ip": true,
-                "security_groups": [
-                  "sg-07ec335f99482ed1f"
-                ],
-                "subnets": [
-                  "subnet-025e08e304673cbe2",
-                  "subnet-045d6df981a7065c7",
-                  "subnet-0779fdbfd8a619ea3",
-                  "subnet-09375700d2c445b38",
-                  "subnet-0a013072d6329b075",
-                  "subnet-0c6b9b1f077610402"
-                ]
-              }
-            ],
-            "ordered_placement_strategy": [],
-            "placement_constraints": [],
-            "platform_version": "LATEST",
-            "propagate_tags": "NONE",
-            "scheduling_strategy": "REPLICA",
-            "service_connect_configuration": [],
-            "service_registries": [],
-            "tags": {
-              "Environment": "dev",
-              "Name": "expense-tracker-backend-service",
-              "Project": "cis1912-final"
-            },
-            "tags_all": {
-              "Environment": "dev",
-              "Name": "expense-tracker-backend-service",
-              "Project": "cis1912-final"
-            },
-            "task_definition": "arn:aws:ecs:us-east-1:318035413014:task-definition/expense-tracker-backend:1",
-            "timeouts": null,
-            "triggers": {},
-            "volume_configuration": [],
-            "vpc_lattice_configurations": [],
-            "wait_for_steady_state": false
-          },
-          "sensitive_attributes": [],
-          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxMjAwMDAwMDAwMDAwLCJkZWxldGUiOjEyMDAwMDAwMDAwMDAsInVwZGF0ZSI6MTIwMDAwMDAwMDAwMH0sInNjaGVtYV92ZXJzaW9uIjoiMSJ9",
-          "dependencies": [
-            "aws_db_instance.main",
-            "aws_db_subnet_group.main",
-            "aws_ecr_repository.backend",
-            "aws_ecs_cluster.main",
-            "aws_ecs_task_definition.backend",
-            "aws_iam_role.ecs_task_execution",
-            "aws_lb.main",
-            "aws_lb_target_group.backend",
-            "aws_security_group.alb",
-            "aws_security_group.ecs",
-            "aws_security_group.rds",
-            "data.aws_subnets.default",
-            "data.aws_vpc.default"
-          ]
-        }
-      ]
+      "instances": []
     },
     {
       "mode": "managed",
       "type": "aws_ecs_service",
       "name": "frontend",
       "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
-      "instances": [
-        {
-          "schema_version": 1,
-          "attributes": {
-            "alarms": [],
-            "availability_zone_rebalancing": "DISABLED",
-            "capacity_provider_strategy": [],
-            "cluster": "arn:aws:ecs:us-east-1:318035413014:cluster/expense-tracker-cluster",
-            "deployment_circuit_breaker": [
-              {
-                "enable": false,
-                "rollback": false
-              }
-            ],
-            "deployment_controller": [
-              {
-                "type": "ECS"
-              }
-            ],
-            "deployment_maximum_percent": 200,
-            "deployment_minimum_healthy_percent": 100,
-            "desired_count": 1,
-            "enable_ecs_managed_tags": false,
-            "enable_execute_command": false,
-            "force_delete": null,
-            "force_new_deployment": null,
-            "health_check_grace_period_seconds": 0,
-            "iam_role": "/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS",
-            "id": "arn:aws:ecs:us-east-1:318035413014:service/expense-tracker-cluster/expense-tracker-frontend-service",
-            "launch_type": "FARGATE",
-            "load_balancer": [
-              {
-                "container_name": "frontend",
-                "container_port": 80,
-                "elb_name": "",
-                "target_group_arn": "arn:aws:elasticloadbalancing:us-east-1:318035413014:targetgroup/expense-tracker-frontend-tg/0a77188b9671379c"
-              }
-            ],
-            "name": "expense-tracker-frontend-service",
-            "network_configuration": [
-              {
-                "assign_public_ip": true,
-                "security_groups": [
-                  "sg-07ec335f99482ed1f"
-                ],
-                "subnets": [
-                  "subnet-025e08e304673cbe2",
-                  "subnet-045d6df981a7065c7",
-                  "subnet-0779fdbfd8a619ea3",
-                  "subnet-09375700d2c445b38",
-                  "subnet-0a013072d6329b075",
-                  "subnet-0c6b9b1f077610402"
-                ]
-              }
-            ],
-            "ordered_placement_strategy": [],
-            "placement_constraints": [],
-            "platform_version": "LATEST",
-            "propagate_tags": "NONE",
-            "scheduling_strategy": "REPLICA",
-            "service_connect_configuration": [],
-            "service_registries": [],
-            "tags": {
-              "Environment": "dev",
-              "Name": "expense-tracker-frontend-service",
-              "Project": "cis1912-final"
-            },
-            "tags_all": {
-              "Environment": "dev",
-              "Name": "expense-tracker-frontend-service",
-              "Project": "cis1912-final"
-            },
-            "task_definition": "arn:aws:ecs:us-east-1:318035413014:task-definition/expense-tracker-frontend:1",
-            "timeouts": null,
-            "triggers": {},
-            "volume_configuration": [],
-            "vpc_lattice_configurations": [],
-            "wait_for_steady_state": false
-          },
-          "sensitive_attributes": [],
-          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxMjAwMDAwMDAwMDAwLCJkZWxldGUiOjEyMDAwMDAwMDAwMDAsInVwZGF0ZSI6MTIwMDAwMDAwMDAwMH0sInNjaGVtYV92ZXJzaW9uIjoiMSJ9",
-          "dependencies": [
-            "aws_ecr_repository.frontend",
-            "aws_ecs_cluster.main",
-            "aws_ecs_task_definition.frontend",
-            "aws_iam_role.ecs_task_execution",
-            "aws_lb.main",
-            "aws_lb_target_group.frontend",
-            "aws_security_group.alb",
-            "aws_security_group.ecs",
-            "data.aws_subnets.default",
-            "data.aws_vpc.default"
-          ]
-        }
-      ]
+      "instances": []
     },
     {
       "mode": "managed",
       "type": "aws_ecs_task_definition",
       "name": "backend",
       "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
-      "instances": [
-        {
-          "schema_version": 1,
-          "attributes": {
-            "arn": "arn:aws:ecs:us-east-1:318035413014:task-definition/expense-tracker-backend:1",
-            "arn_without_revision": "arn:aws:ecs:us-east-1:318035413014:task-definition/expense-tracker-backend",
-            "container_definitions": "[{\"environment\":[{\"name\":\"CORS_ORIGINS\",\"value\":\"http://expense-tracker-alb-1155641167.us-east-1.elb.amazonaws.com\"},{\"name\":\"DATABASE_URL\",\"value\":\"postgresql://expense_user:TOPSECRET_EXPENSE@expense-tracker-db.cof4o8qk4ho3.us-east-1.rds.amazonaws.com:5432/expense_tracker\"},{\"name\":\"FLASK_ENV\",\"value\":\"production\"},{\"name\":\"FLASK_PORT\",\"value\":\"5000\"}],\"essential\":true,\"healthCheck\":{\"command\":[\"CMD-SHELL\",\"curl -f http://localhost:5000/api/health || exit 1\"],\"interval\":30,\"retries\":3,\"startPeriod\":60,\"timeout\":5},\"image\":\"318035413014.dkr.ecr.us-east-1.amazonaws.com/expense-tracker-backend:latest\",\"mountPoints\":[],\"name\":\"backend\",\"portMappings\":[{\"containerPort\":5000,\"hostPort\":5000,\"protocol\":\"tcp\"}],\"systemControls\":[],\"volumesFrom\":[]}]",
-            "cpu": "256",
-            "enable_fault_injection": false,
-            "ephemeral_storage": [],
-            "execution_role_arn": "arn:aws:iam::318035413014:role/expense-tracker-ecs-task-execution-role",
-            "family": "expense-tracker-backend",
-            "id": "expense-tracker-backend",
-            "inference_accelerator": [],
-            "ipc_mode": "",
-            "memory": "512",
-            "network_mode": "awsvpc",
-            "pid_mode": "",
-            "placement_constraints": [],
-            "proxy_configuration": [],
-            "requires_compatibilities": [
-              "FARGATE"
-            ],
-            "revision": 1,
-            "runtime_platform": [],
-            "skip_destroy": false,
-            "tags": {
-              "Environment": "dev",
-              "Name": "expense-tracker-backend-task",
-              "Project": "cis1912-final"
-            },
-            "tags_all": {
-              "Environment": "dev",
-              "Name": "expense-tracker-backend-task",
-              "Project": "cis1912-final"
-            },
-            "task_role_arn": "",
-            "track_latest": false,
-            "volume": []
-          },
-          "sensitive_attributes": [
-            [
-              {
-                "type": "get_attr",
-                "value": "container_definitions"
-              }
-            ]
-          ],
-          "private": "eyJzY2hlbWFfdmVyc2lvbiI6IjEifQ==",
-          "dependencies": [
-            "aws_db_instance.main",
-            "aws_db_subnet_group.main",
-            "aws_ecr_repository.backend",
-            "aws_iam_role.ecs_task_execution",
-            "aws_lb.main",
-            "aws_security_group.alb",
-            "aws_security_group.ecs",
-            "aws_security_group.rds",
-            "data.aws_subnets.default",
-            "data.aws_vpc.default"
-          ]
-        }
-      ]
-    },
-    {
-      "mode": "managed",
-      "type": "aws_ecs_task_definition",
-      "name": "frontend",
-      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
-      "instances": [
-        {
-          "schema_version": 1,
-          "attributes": {
-            "arn": "arn:aws:ecs:us-east-1:318035413014:task-definition/expense-tracker-frontend:1",
-            "arn_without_revision": "arn:aws:ecs:us-east-1:318035413014:task-definition/expense-tracker-frontend",
-            "container_definitions": "[{\"environment\":[{\"name\":\"VITE_API_URL\",\"value\":\"http://expense-tracker-alb-1155641167.us-east-1.elb.amazonaws.com/api\"}],\"essential\":true,\"healthCheck\":{\"command\":[\"CMD-SHELL\",\"wget --no-verbose --tries=1 --spider http://localhost:80 || exit 1\"],\"interval\":30,\"retries\":3,\"startPeriod\":60,\"timeout\":5},\"image\":\"318035413014.dkr.ecr.us-east-1.amazonaws.com/expense-tracker-frontend:latest\",\"mountPoints\":[],\"name\":\"frontend\",\"portMappings\":[{\"containerPort\":80,\"hostPort\":80,\"protocol\":\"tcp\"}],\"systemControls\":[],\"volumesFrom\":[]}]",
-            "cpu": "256",
-            "enable_fault_injection": false,
-            "ephemeral_storage": [],
-            "execution_role_arn": "arn:aws:iam::318035413014:role/expense-tracker-ecs-task-execution-role",
-            "family": "expense-tracker-frontend",
-            "id": "expense-tracker-frontend",
-            "inference_accelerator": [],
-            "ipc_mode": "",
-            "memory": "512",
-            "network_mode": "awsvpc",
-            "pid_mode": "",
-            "placement_constraints": [],
-            "proxy_configuration": [],
-            "requires_compatibilities": [
-              "FARGATE"
-            ],
-            "revision": 1,
-            "runtime_platform": [],
-            "skip_destroy": false,
-            "tags": {
-              "Environment": "dev",
-              "Name": "expense-tracker-frontend-task",
-              "Project": "cis1912-final"
-            },
-            "tags_all": {
-              "Environment": "dev",
-              "Name": "expense-tracker-frontend-task",
-              "Project": "cis1912-final"
-            },
-            "task_role_arn": "",
-            "track_latest": false,
-            "volume": []
-          },
-          "sensitive_attributes": [],
-          "private": "eyJzY2hlbWFfdmVyc2lvbiI6IjEifQ==",
-          "dependencies": [
-            "aws_ecr_repository.frontend",
-            "aws_iam_role.ecs_task_execution",
-            "aws_lb.main",
-            "aws_security_group.alb",
-            "data.aws_subnets.default",
-            "data.aws_vpc.default"
-          ]
-        }
-      ]
+      "instances": []
     },
     {
       "mode": "managed",
@@ -961,9 +549,7 @@
             "force_detach_policies": false,
             "id": "expense-tracker-ecs-task-execution-role",
             "inline_policy": [],
-            "managed_policy_arns": [
-              "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-            ],
+            "managed_policy_arns": [],
             "max_session_duration": 3600,
             "name": "expense-tracker-ecs-task-execution-role",
             "name_prefix": "",
@@ -1185,7 +771,7 @@
             "routing_http_response_x_content_type_options_header_value": "",
             "routing_http_response_x_frame_options_header_value": "",
             "ssl_policy": "",
-            "tags": {},
+            "tags": null,
             "tags_all": {},
             "tcp_idle_timeout_seconds": null,
             "timeouts": null
@@ -1243,7 +829,7 @@
             "id": "arn:aws:elasticloadbalancing:us-east-1:318035413014:listener-rule/app/expense-tracker-alb/4930d9f318dea9d4/1153923fa930b6d5/9f10318aeddef727",
             "listener_arn": "arn:aws:elasticloadbalancing:us-east-1:318035413014:listener/app/expense-tracker-alb/4930d9f318dea9d4/1153923fa930b6d5",
             "priority": 100,
-            "tags": {},
+            "tags": null,
             "tags_all": {}
           },
           "sensitive_attributes": [],
@@ -1289,9 +875,7 @@
             "id": "arn:aws:elasticloadbalancing:us-east-1:318035413014:targetgroup/expense-tracker-backend-tg/4edc73f62f3e4987",
             "ip_address_type": "ipv4",
             "lambda_multi_value_headers_enabled": false,
-            "load_balancer_arns": [
-              "arn:aws:elasticloadbalancing:us-east-1:318035413014:loadbalancer/app/expense-tracker-alb/4930d9f318dea9d4"
-            ],
+            "load_balancer_arns": [],
             "load_balancing_algorithm_type": "round_robin",
             "load_balancing_anomaly_mitigation": "off",
             "load_balancing_cross_zone_enabled": "use_load_balancer_configuration",
@@ -1389,9 +973,7 @@
             "id": "arn:aws:elasticloadbalancing:us-east-1:318035413014:targetgroup/expense-tracker-frontend-tg/0a77188b9671379c",
             "ip_address_type": "ipv4",
             "lambda_multi_value_headers_enabled": false,
-            "load_balancer_arns": [
-              "arn:aws:elasticloadbalancing:us-east-1:318035413014:loadbalancer/app/expense-tracker-alb/4930d9f318dea9d4"
-            ],
+            "load_balancer_arns": [],
             "load_balancing_algorithm_type": "round_robin",
             "load_balancing_anomaly_mitigation": "off",
             "load_balancing_cross_zone_enabled": "use_load_balancer_configuration",
@@ -1476,7 +1058,7 @@
                 "cidr_blocks": [
                   "0.0.0.0/0"
                 ],
-                "description": "All outbound",
+                "description": "Allow all outbound traffic",
                 "from_port": 0,
                 "ipv6_cidr_blocks": [],
                 "prefix_list_ids": [],
@@ -1492,7 +1074,7 @@
                 "cidr_blocks": [
                   "0.0.0.0/0"
                 ],
-                "description": "HTTP",
+                "description": "HTTP from internet",
                 "from_port": 80,
                 "ipv6_cidr_blocks": [],
                 "prefix_list_ids": [],
@@ -1523,8 +1105,7 @@
           "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsImRlbGV0ZSI6OTAwMDAwMDAwMDAwfSwic2NoZW1hX3ZlcnNpb24iOiIxIn0=",
           "dependencies": [
             "data.aws_vpc.default"
-          ],
-          "create_before_destroy": true
+          ]
         }
       ]
     },
@@ -1537,14 +1118,14 @@
         {
           "schema_version": 1,
           "attributes": {
-            "arn": "arn:aws:ec2:us-east-1:318035413014:security-group/sg-07ec335f99482ed1f",
-            "description": "ECS security group",
+            "arn": "arn:aws:ec2:us-east-1:318035413014:security-group/sg-005dd0af2b5765c71",
+            "description": "Security group for ECS tasks",
             "egress": [
               {
                 "cidr_blocks": [
                   "0.0.0.0/0"
                 ],
-                "description": "All outbound",
+                "description": "Allow all outbound traffic",
                 "from_port": 0,
                 "ipv6_cidr_blocks": [],
                 "prefix_list_ids": [],
@@ -1554,11 +1135,11 @@
                 "to_port": 0
               }
             ],
-            "id": "sg-07ec335f99482ed1f",
+            "id": "sg-005dd0af2b5765c71",
             "ingress": [
               {
                 "cidr_blocks": [],
-                "description": "From ALB",
+                "description": "Allow traffic from ALB",
                 "from_port": 0,
                 "ipv6_cidr_blocks": [],
                 "prefix_list_ids": [],
@@ -1605,14 +1186,14 @@
         {
           "schema_version": 1,
           "attributes": {
-            "arn": "arn:aws:ec2:us-east-1:318035413014:security-group/sg-07a26f7dc6163a19d",
-            "description": "RDS security group",
+            "arn": "arn:aws:ec2:us-east-1:318035413014:security-group/sg-0c03f45d18beecc66",
+            "description": "Security group for RDS PostgreSQL",
             "egress": [
               {
                 "cidr_blocks": [
                   "0.0.0.0/0"
                 ],
-                "description": "All outbound",
+                "description": "Allow all outbound traffic",
                 "from_port": 0,
                 "ipv6_cidr_blocks": [],
                 "prefix_list_ids": [],
@@ -1622,17 +1203,17 @@
                 "to_port": 0
               }
             ],
-            "id": "sg-07a26f7dc6163a19d",
+            "id": "sg-0c03f45d18beecc66",
             "ingress": [
               {
                 "cidr_blocks": [],
-                "description": "PostgreSQL",
+                "description": "PostgreSQL from ECS tasks",
                 "from_port": 5432,
                 "ipv6_cidr_blocks": [],
                 "prefix_list_ids": [],
                 "protocol": "tcp",
                 "security_groups": [
-                  "sg-07ec335f99482ed1f"
+                  "sg-005dd0af2b5765c71"
                 ],
                 "self": false,
                 "to_port": 5432

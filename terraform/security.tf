@@ -1,6 +1,6 @@
 resource "aws_security_group" "alb" {
   name        = "${var.project_name}-alb-sg"
-  description = "ALB security group"
+  description = "Security group for Application Load Balancer"
   vpc_id      = data.aws_vpc.default.id
 
   ingress {
@@ -23,6 +23,10 @@ resource "aws_security_group" "alb" {
     Name        = "${var.project_name}-alb-sg"
     Environment = var.environment
     Project     = "cis1912-final"
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
