@@ -4,7 +4,6 @@ Database models for the expense tracker application.
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, date
 
-# Initialize SQLAlchemy instance (will be initialized in app.py)
 db = SQLAlchemy()
 
 class Expense(db.Model):

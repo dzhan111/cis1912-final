@@ -1,3 +1,4 @@
+# ALB security group
 resource "aws_security_group" "alb" {
   name        = "${var.project_name}-alb-sg"
   description = "Security group for Application Load Balancer"
@@ -30,6 +31,7 @@ resource "aws_security_group" "alb" {
   }
 }
 
+# ECS security group
 resource "aws_security_group" "ecs" {
   name        = "${var.project_name}-ecs-sg"
   description = "ECS security group"
@@ -58,6 +60,7 @@ resource "aws_security_group" "ecs" {
   }
 }
 
+# RDS security group
 resource "aws_security_group" "rds" {
   name        = "${var.project_name}-rds-sg"
   description = "RDS security group"

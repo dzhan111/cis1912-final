@@ -13,10 +13,12 @@ provider "aws" {
   region = var.aws_region
 }
 
+# Default VPC lookup
 data "aws_vpc" "default" {
   default = true
 }
 
+# Get all subnets
 data "aws_subnets" "default" {
   filter {
     name   = "vpc-id"
@@ -29,6 +31,7 @@ data "aws_subnet" "default" {
   id       = each.value
 }
 
+# ECS cluster
 resource "aws_ecs_cluster" "main" {
   name = "${var.project_name}-cluster"
 

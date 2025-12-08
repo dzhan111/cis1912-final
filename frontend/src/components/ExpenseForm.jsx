@@ -22,20 +22,17 @@ const ExpenseForm = ({ onSubmit }) => {
     e.preventDefault();
     setError('');
 
-    // Validate amount
     const amountNum = parseFloat(amount);
     if (!amount || isNaN(amountNum) || amountNum <= 0) {
       setError('Please enter a valid positive amount');
       return;
     }
 
-    // Validate description
     if (!description.trim()) {
       setError('Please enter a description');
       return;
     }
 
-    // Create expense object
     const expenseData = {
       amount: amountNum,
       description: description.trim(),
@@ -43,10 +40,8 @@ const ExpenseForm = ({ onSubmit }) => {
       date,
     };
 
-    // Call onSubmit callback
     onSubmit(expenseData);
 
-    // Reset form
     setAmount('');
     setDescription('');
     setCategory('Food');

@@ -1,3 +1,4 @@
+# Backend task definition
 resource "aws_ecs_task_definition" "backend" {
   family                   = "${var.project_name}-backend"
   requires_compatibilities  = ["FARGATE"]
@@ -54,6 +55,7 @@ resource "aws_ecs_task_definition" "backend" {
   }
 }
 
+# Frontend task definition
 resource "aws_ecs_task_definition" "frontend" {
   family                   = "${var.project_name}-frontend"
   requires_compatibilities = ["FARGATE"]
@@ -98,6 +100,7 @@ resource "aws_ecs_task_definition" "frontend" {
   }
 }
 
+# Backend service
 resource "aws_ecs_service" "backend" {
   name            = "${var.project_name}-backend-service"
   cluster         = aws_ecs_cluster.main.id
@@ -128,6 +131,7 @@ resource "aws_ecs_service" "backend" {
   }
 }
 
+# Frontend service
 resource "aws_ecs_service" "frontend" {
   name            = "${var.project_name}-frontend-service"
   cluster         = aws_ecs_cluster.main.id

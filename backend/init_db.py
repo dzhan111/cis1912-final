@@ -13,16 +13,11 @@ def init_database():
     app = create_app()
     
     with app.app_context():
-        # Drop all tables (for fresh start)
-        # Uncomment the next line if you want to reset the database
         # db.drop_all()
         
-        # Create all tables
         db.create_all()
         print("Database tables created successfully!")
         
-        # Optional: Add sample data for testing
-        # Uncomment the following lines to add sample expenses
         """
         sample_expenses = [
             Expense(amount=25.50, description="Lunch at restaurant", category="Food", date=date.today()),

@@ -1,3 +1,4 @@
+# DB subnet group
 resource "aws_db_subnet_group" "main" {
   name       = "${var.project_name}-db-subnet-group"
   subnet_ids = data.aws_subnets.default.ids
@@ -9,6 +10,7 @@ resource "aws_db_subnet_group" "main" {
   }
 }
 
+# PostgreSQL instance
 resource "aws_db_instance" "main" {
   identifier = "${var.project_name}-db"
 

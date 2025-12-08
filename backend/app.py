@@ -13,29 +13,22 @@ def create_app():
     Returns:
         Flask: Configured Flask application instance
     """
-    # Create Flask app instance
     app = Flask(__name__)
     
-    # Load configuration
     app.config.from_object(Config)
     
-    # Initialize CORS - allow frontend to make requests
     CORS(app, origins=app.config['CORS_ORIGINS'])
     
-    # Initialize SQLAlchemy with app
     db.init_app(app)
     
-    # Register API blueprint
     from routes import api_bp
     app.register_blueprint(api_bp)
     
-    # Create database tables if they don't exist
     with app.app_context():
         db.create_all()
     
     return app
 
-# Create app instance
 app = create_app()
 
 @app.errorhandler(404)
@@ -50,7 +43,6 @@ def internal_error(error):
     return {'error': 'Internal server error'}, 500
 
 if __name__ == '__main__':
-    # Run the Flask development server
     app.run(
         host='0.0.0.0',
         port=app.config['FLASK_PORT'],

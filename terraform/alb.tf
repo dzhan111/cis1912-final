@@ -1,3 +1,4 @@
+# Application Load Balancer
 resource "aws_lb" "main" {
   name               = "${var.project_name}-alb"
   internal           = false
@@ -14,6 +15,7 @@ resource "aws_lb" "main" {
   }
 }
 
+# Backend target group
 resource "aws_lb_target_group" "backend" {
   name        = "${var.project_name}-backend-tg"
   port        = 5000
@@ -41,6 +43,7 @@ resource "aws_lb_target_group" "backend" {
   }
 }
 
+# Frontend target group
 resource "aws_lb_target_group" "frontend" {
   name        = "${var.project_name}-frontend-tg"
   port        = 80
@@ -68,6 +71,7 @@ resource "aws_lb_target_group" "frontend" {
   }
 }
 
+# Default listener
 resource "aws_lb_listener" "main" {
   load_balancer_arn = aws_lb.main.arn
   port              = "80"
@@ -79,6 +83,7 @@ resource "aws_lb_listener" "main" {
   }
 }
 
+# API routing rule
 resource "aws_lb_listener_rule" "backend" {
   listener_arn = aws_lb_listener.main.arn
   priority     = 100

@@ -32,18 +32,14 @@ def get_expenses():
     Returns:
         JSON: List of all expenses (or filtered expenses)
     """
-    # Get optional category filter from query parameters
     category = request.args.get('category')
     
-    # Build query - filter by category if provided
     query = Expense.query
     if category and category in VALID_CATEGORIES:
         query = query.filter_by(category=category)
     
-    # Get all expenses matching the query, ordered by date (newest first)
     expenses = query.order_by(Expense.date.desc(), Expense.id.desc()).all()
     
-    # Convert to dictionary format for JSON response
     return jsonify([expense.to_dict() for expense in expenses]), 200
 
 @api_bp.route('/expenses', methods=['POST'])
@@ -62,7 +58,6 @@ def create_expense():
     """
     data = request.get_json()
     
-    # Validate required fields
     if not data:
         return jsonify({'error': 'No data provided'}), 400
     
@@ -71,7 +66,6 @@ def create_expense():
     category = data.get('category')
     date_str = data.get('date')
     
-    # Validate amount
     if amount is None:
         return jsonify({'error': 'Amount is required'}), 400
     try:
@@ -81,17 +75,14 @@ def create_expense():
     except (ValueError, TypeError):
         return jsonify({'error': 'Amount must be a valid number'}), 400
     
-    # Validate description
     if not description or not description.strip():
         return jsonify({'error': 'Description is required'}), 400
     
-    # Validate category
     if not category or category not in VALID_CATEGORIES:
         return jsonify({
             'error': f'Category must be one of: {", ".join(VALID_CATEGORIES)}'
         }), 400
     
-    # Parse date if provided, otherwise use today
     expense_date = None
     if date_str:
         try:
@@ -102,7 +93,6 @@ def create_expense():
         from datetime import date
         expense_date = date.today()
     
-    # Create new expense
     expense = Expense(
         amount=amount,
         description=description.strip(),
@@ -110,7 +100,6 @@ def create_expense():
         date=expense_date
     )
     
-    # Save to database
     try:
         db.session.add(expense)
         db.session.commit()
@@ -130,10 +119,8 @@ def delete_expense(expense_id):
     Returns:
         JSON: Success message with status 200, or error with status 404/500
     """
-    # Find expense by ID
     expense = Expense.query.get_or_404(expense_id)
     
-    # Delete from database
     try:
         db.session.delete(expense)
         db.session.commit()
@@ -153,31 +140,24 @@ def get_summary():
     Returns:
         JSON: Summary object with totals by category and overall total
     """
-    # Get optional category filter
     category = request.args.get('category')
     
-    # Build query
     query = Expense.query
     if category and category in VALID_CATEGORIES:
         query = query.filter_by(category=category)
     
-    # Get all expenses matching query
     expenses = query.all()
     
-    # Calculate totals by category
     totals_by_category = {}
     overall_total = 0.0
     
     for expense in expenses:
-        # Add to category total
         if expense.category not in totals_by_category:
             totals_by_category[expense.category] = 0.0
         totals_by_category[expense.category] += expense.amount
         
-        # Add to overall total
         overall_total += expense.amount
     
-    # Round to 2 decimal places for currency display
     totals_by_category = {
         cat: round(total, 2) 
         for cat, total in totals_by_category.items()
