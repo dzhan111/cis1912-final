@@ -141,7 +141,7 @@ aws ecs execute-command \
 ```bash
 curl http://<alb-dns>/api/health
 ```
-
+d
 **Test API Endpoints:**
 ```bash
 # Get all expenses
