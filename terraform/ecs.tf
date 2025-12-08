@@ -77,7 +77,7 @@ resource "aws_ecs_task_definition" "frontend" {
       environment = [
         {
           name  = "VITE_API_URL"
-          value = "http://${aws_lb.main.dns_name}/api"
+          value = "http://${aws_lb.main.dns_name}"
         }
       ]
 
@@ -157,4 +157,3 @@ resource "aws_ecs_service" "frontend" {
     Project     = "cis1912-final"
   }
 }
-

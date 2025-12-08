@@ -30,11 +30,13 @@ terraform apply
 cd terraform
 terraform output backend_ecr_repository_url
 terraform output frontend_ecr_repository_url
+terraform output alb_dns_name
 ```
 
 You should see:
 - Backend: `318035413014.dkr.ecr.us-east-1.amazonaws.com/expense-tracker-backend`
 - Frontend: `318035413014.dkr.ecr.us-east-1.amazonaws.com/expense-tracker-frontend`
+- ALB DNS: e.g. `expense-tracker-alb-xxxx.us-east-1.elb.amazonaws.com`
 
 ## Step 3: Login to ECR
 
@@ -42,23 +44,32 @@ You should see:
 aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 318035413014.dkr.ecr.us-east-1.amazonaws.com
 ```
 
-## Step 4: Build and Push Backend Image
+## Step 4: Build and Push Backend Image (multi-arch)
 
 ```bash
+# ensure a buildx builder exists
+docker buildx create --name expense-builder --driver docker-container --use 2>/dev/null || docker buildx use expense-builder
+
 cd ../backend
-docker build -t expense-tracker-backend .
-docker tag expense-tracker-backend:latest 318035413014.dkr.ecr.us-east-1.amazonaws.com/expense-tracker-backend:latest
-docker push 318035413014.dkr.ecr.us-east-1.amazonaws.com/expense-tracker-backend:latest
+docker buildx build \
+  --platform linux/amd64,linux/arm64 \
+  -t 318035413014.dkr.ecr.us-east-1.amazonaws.com/expense-tracker-backend:latest \
+  --push \
+  .
 ```
 
-## Step 5: Build and Push Frontend Image
+## Step 5: Build and Push Frontend Image (multi-arch, API -> ALB)
 
 ```bash
 cd ../frontend
-docker build -t expense-tracker-frontend .
-docker tag expense-tracker-frontend:latest 318035413014.dkr.ecr.us-east-1.amazonaws.com/expense-tracker-frontend:latest
-docker push 318035413014.dkr.ecr.us-east-1.amazonaws.com/expense-tracker-frontend:latest
+docker buildx build \
+  --platform linux/amd64,linux/arm64 \
+  -t 318035413014.dkr.ecr.us-east-1.amazonaws.com/expense-tracker-frontend:latest \
+  --build-arg VITE_API_URL=http://<alb-dns-from-step-2> \
+  --push \
+  .
 ```
+Replace `<alb-dns-from-step-2>` with the value printed by `terraform output alb_dns_name`.
 
 ## Step 6: Deploy to ECS
 
@@ -132,4 +143,3 @@ aws ecs describe-services \
 ```bash
 aws ecs list-tasks --cluster expense-tracker-cluster --region us-east-1
 ```
-

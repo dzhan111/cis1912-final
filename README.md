@@ -1,464 +1,57 @@
-# Expense Tracker Application
+# Expense Tracker (CIS1912 Final)
 
-A full-stack expense tracking web application built with React (frontend) and Flask (backend), designed for DevOps deployment with Docker, Kubernetes, and Terraform.
+Full-stack expense tracking app with React/Vite frontend, Flask/PostgreSQL backend, and cloud infra via Terraform → ECS/Fargate + ALB + RDS + ECR. Accomplished: built CRUD API with summaries, responsive UI, health checks, Dockerized services, multi-arch images, and a one-shot `deploy.sh` that applies infra, builds/pushes images, and rolls ECS.
 
-## Features
+## What’s in the code (high level)
+- Frontend (`frontend/`)
+  - `src/services/api.js`: Axios client; reads `VITE_API_URL` (defaults to ALB or localhost) and appends `/api/...`.
+  - `src/App.jsx` + components: expense list, add form, category filter, summary.
+  - `Dockerfile`: multi-stage build; accepts `VITE_API_URL` build arg.
+- Backend (`backend/`)
+  - `app.py`: Flask entry; wires routes and CORS.
+  - `routes.py`: REST handlers for expenses, summary, health.
+  - `models.py`: SQLAlchemy models; Postgres-backed.
+  - `init_db.py`: initializes tables.
+  - `Dockerfile`: Python base, installs deps, runs gunicorn/flask (see file).
+- Infra (`terraform/`)
+  - `main.tf`, `alb.tf`, `ecs.tf`, `rds.tf`, `ecr.tf`, `iam.tf`, `security.tf`: VPC defaults, ALB with frontend default listener + `/api/*` to backend, ECS Fargate services, RDS Postgres, ECR repos, security groups.
+  - `outputs.tf`: exposes ALB DNS and ECR URLs for deploys.
+- Deploy automation
+  - `deploy.sh`: applies Terraform, logs into ECR, builds/pushes multi-arch images (backend/frontend), forces ECS rollout, waits for stable, and prints ALB URL. Uses `AWS_REGION` or defaults to `us-east-1`.
 
-- ✅ Add, view, and delete expenses
-- ✅ Filter expenses by category (Food, Transport, Entertainment, Bills, Other)
-- ✅ View expense summaries with totals by category
-- ✅ Modern, responsive UI with color-coded categories
-- ✅ RESTful API with comprehensive error handling
-- ✅ PostgreSQL database for persistent storage
-- ✅ Docker containerization ready
-- ✅ Health check endpoints for monitoring
-
-## Tech Stack
-
-### Frontend
-- **React 18** - UI framework
-- **Vite** - Build tool and dev server
-- **Axios** - HTTP client for API calls
-- **CSS3** - Modern styling with CSS variables
-
-### Backend
-- **Flask** - Python web framework
-- **SQLAlchemy** - ORM for database operations
-- **PostgreSQL** - Relational database
-- **Flask-CORS** - Cross-origin resource sharing
-
-### DevOps
-- **Docker** - Containerization
-- **Docker Compose** - Multi-container orchestration
-- Ready for Kubernetes and Terraform deployment
-
-## Project Structure
-
-```
-cis1912-final/
-├── backend/                 # Flask backend application
-│   ├── app.py              # Flask app entry point
-│   ├── models.py           # Database models
-│   ├── routes.py           # API route handlers
-│   ├── config.py           # Configuration settings
-│   ├── init_db.py          # Database initialization script
-│   ├── requirements.txt    # Python dependencies
-│   └── Dockerfile          # Backend Docker image
-├── frontend/               # React frontend application
-│   ├── src/
-│   │   ├── App.jsx         # Main app component
-│   │   ├── main.jsx        # React entry point
-│   │   ├── components/     # React components
-│   │   ├── services/       # API client
-│   │   └── styles/         # CSS styles
-│   ├── package.json        # Node dependencies
-│   ├── vite.config.js      # Vite configuration
-│   └── Dockerfile          # Frontend Docker image
-├── docker-compose.yml      # Docker Compose configuration
-├── .gitignore             # Git ignore rules
-└── README.md              # This file
-```
-
-## Quick Start
-
-### Prerequisites
-
-- Docker and Docker Compose installed
-- OR Node.js 18+ and Python 3.11+ for local development
-
-### Option 1: Docker Compose (Recommended)
-
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd cis1912-final
-   ```
-
-2. **Start all services**
-   ```bash
-   docker-compose up --build
-   ```
-
-3. **Access the application**
-   - Frontend: http://localhost:5173
-   - Backend API: http://localhost:5000
-   - API Health Check: http://localhost:5000/api/health
-
-4. **Stop services**
-   ```bash
-   docker-compose down
-   ```
-
-### Option 2: Local Development
-
-#### Backend Setup
-
-1. **Navigate to backend directory**
-   ```bash
-   cd backend
-   ```
-
-2. **Create virtual environment**
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-3. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **Set up environment variables**
-   ```bash
-   cp .env.example .env
-   # Edit .env with your database URL
-   ```
-
-5. **Initialize database**
-   ```bash
-   python init_db.py
-   ```
-
-6. **Run Flask server**
-   ```bash
-   python app.py
-   ```
-
-#### Frontend Setup
-
-1. **Navigate to frontend directory**
-   ```bash
-   cd frontend
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Set up environment variables**
-   ```bash
-   cp .env.example .env
-   # Edit .env with your API URL
-   ```
-
-4. **Run development server**
-   ```bash
-   npm run dev
-   ```
-
-## API Documentation
-
-### Base URL
-```
-http://localhost:5000/api
-```
-
-### Endpoints
-
-#### Health Check
-```http
-GET /api/health
-```
-Returns API health status.
-
-**Response:**
-```json
-{
-  "status": "healthy",
-  "service": "expense-tracker-api"
-}
-```
-
-#### Get All Expenses
-```http
-GET /api/expenses?category=Food
-```
-Retrieves all expenses, optionally filtered by category.
-
-**Query Parameters:**
-- `category` (optional): Filter by category (Food, Transport, Entertainment, Bills, Other)
-
-**Response:**
-```json
-[
-  {
-    "id": 1,
-    "amount": 25.50,
-    "description": "Lunch at restaurant",
-    "category": "Food",
-    "date": "2024-01-15"
-  }
-]
-```
-
-#### Create Expense
-```http
-POST /api/expenses
-Content-Type: application/json
-```
-Creates a new expense.
-
-**Request Body:**
-```json
-{
-  "amount": 25.50,
-  "description": "Lunch at restaurant",
-  "category": "Food",
-  "date": "2024-01-15"
-}
-```
-
-**Response:**
-```json
-{
-  "id": 1,
-  "amount": 25.50,
-  "description": "Lunch at restaurant",
-  "category": "Food",
-  "date": "2024-01-15"
-}
-```
-
-#### Delete Expense
-```http
-DELETE /api/expenses/{id}
-```
-Deletes an expense by ID.
-
-**Response:**
-```json
-{
-  "message": "Expense deleted successfully"
-}
-```
-
-#### Get Summary
-```http
-GET /api/expenses/summary?category=Food
-```
-Gets expense totals by category and overall total.
-
-**Query Parameters:**
-- `category` (optional): Filter by category
-
-**Response:**
-```json
-{
-  "totals_by_category": {
-    "Food": 150.50,
-    "Transport": 45.00
-  },
-  "overall_total": 195.50,
-  "count": 5
-}
-```
-
-## Environment Variables
-
-### Backend
-- `DATABASE_URL` - PostgreSQL connection string
-- `FLASK_ENV` - Flask environment (development/production)
-- `FLASK_PORT` - Flask server port (default: 5000)
-- `CORS_ORIGINS` - Comma-separated list of allowed CORS origins
-
-### Frontend
-- `VITE_API_URL` - Backend API URL (default: http://localhost:5000)
-
-## Database Schema
-
-### Expense Table
-| Column | Type | Description |
-|--------|------|-------------|
-| id | Integer | Primary key |
-| amount | Float | Expense amount |
-| description | String(200) | Expense description |
-| category | String(50) | Expense category |
-| date | Date | Expense date |
-
-## Development
-
-### Running Tests
+## How to run / view
+### Fast local (Docker Compose)
 ```bash
-# Backend tests (when implemented)
-cd backend
-pytest
-
-# Frontend tests (when implemented)
-cd frontend
-npm test
+docker-compose up --build
+# Frontend: http://localhost:5173
+# API:      http://localhost:5000/api/health
 ```
+Stop with `docker-compose down`.
 
-### Code Style
-- Backend follows PEP 8 Python style guide
-- Frontend uses ESLint and Prettier (when configured)
-- All code includes inline comments for documentation
+### Local dev (separate services)
+- Backend: `cd backend && python -m venv venv && source venv/bin/activate && pip install -r requirements.txt && export DATABASE_URL=postgresql://... && python init_db.py && python app.py`
+- Frontend: `cd frontend && npm install && npm run dev` (set `VITE_API_URL` in `.env` if not localhost).
 
-## DevOps Readiness
-
-This application is designed for easy deployment with DevOps tools:
-
-- ✅ **Docker**: Containerized with Dockerfiles for both services
-- ✅ **Docker Compose**: Multi-container setup for local development
-- ✅ **Environment Variables**: All configuration via environment variables
-- ✅ **Health Checks**: API health endpoint for monitoring
-- ✅ **Stateless Backend**: Ready for horizontal scaling
-- ✅ **Database Migrations**: SQLAlchemy handles schema management
-- ✅ **CORS Configuration**: Configurable for production domains
-
-### Next Steps for DevOps Deployment
-
-1. **Kubernetes Deployment**
-   - Create Kubernetes manifests (deployments, services, ingress)
-   - Set up persistent volumes for PostgreSQL
-   - Configure ConfigMaps and Secrets
-
-2. **Terraform Infrastructure**
-   - Define infrastructure as code
-   - Set up cloud resources (VPC, databases, load balancers)
-   - Configure auto-scaling groups
-
-3. **CI/CD Pipeline**
-   - Set up GitHub Actions or GitLab CI
-   - Automated testing and building
-   - Container registry integration
-   - Automated deployment
-
-## Troubleshooting
-
-### Backend won't start
-- Check if PostgreSQL is running
-- Verify DATABASE_URL in .env file
-- Check if port 5000 is available
-
-### Frontend can't connect to backend
-- Verify VITE_API_URL in frontend/.env
-- Check CORS_ORIGINS in backend/.env
-- Ensure backend is running on correct port
-
-### Database connection errors
-- Verify PostgreSQL credentials
-- Check if database exists
-- Run `python init_db.py` to initialize tables
-
-## AWS Deployment with Terraform
-
-### Prerequisites
-
-- AWS account with appropriate permissions
-- Terraform installed (>= 1.0)
-- AWS CLI configured with credentials
-- Docker installed (for building images)
-
-### Infrastructure Setup
-
-1. **Navigate to terraform directory**
-   ```bash
-   cd terraform
-   ```
-
-2. **Create terraform.tfvars file**
-   ```bash
-   cp terraform.tfvars.example terraform.tfvars
-   # Edit terraform.tfvars with your values, especially db_password
-   ```
-
-3. **Initialize Terraform**
-   ```bash
-   terraform init
-   ```
-
-4. **Review the plan**
-   ```bash
-   terraform plan
-   ```
-
-5. **Apply infrastructure**
-   ```bash
-   terraform apply
-   ```
-
-6. **Get outputs (ALB DNS, ECR URLs)**
-   ```bash
-   terraform output
-   ```
-
-### Deploying Application Images
-
-After infrastructure is created:
-
-1. **Login to ECR**
-   ```bash
-   aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <account-id>.dkr.ecr.us-east-1.amazonaws.com
-   ```
-
-2. **Build and push backend image**
-   ```bash
-   cd ../backend
-   docker build -t expense-tracker-backend .
-   docker tag expense-tracker-backend:latest <ecr-url>/expense-tracker-backend:latest
-   docker push <ecr-url>/expense-tracker-backend:latest
-   ```
-
-3. **Build and push frontend image**
-   ```bash
-   cd ../frontend
-   docker build -t expense-tracker-frontend .
-   docker tag expense-tracker-frontend:latest <ecr-url>/expense-tracker-frontend:latest
-   docker push <ecr-url>/expense-tracker-frontend:latest
-   ```
-
-4. **Force ECS service update**
-   ```bash
-   aws ecs update-service --cluster expense-tracker-cluster --service expense-tracker-backend-service --force-new-deployment
-   aws ecs update-service --cluster expense-tracker-cluster --service expense-tracker-frontend-service --force-new-deployment
-   ```
-
-### CI/CD with GitHub Actions
-
-1. **Set up GitHub Secrets**
-   - Go to your repository Settings → Secrets and variables → Actions
-   - Add the following secrets:
-     - `AWS_ACCESS_KEY_ID`
-     - `AWS_SECRET_ACCESS_KEY`
-
-2. **Push to main branch**
-   - The workflow will automatically:
-     - Build Docker images
-     - Push to ECR
-     - Deploy to ECS
-
-3. **Access your application**
-   - Get the ALB DNS name from Terraform outputs
-   - Access at: `http://<alb-dns-name>`
-
-### Terraform Resources Created
-
-- **ECS Cluster** - Fargate cluster for containers
-- **ECR Repositories** - Container registries for backend and frontend
-- **ECS Services** - Backend and frontend services
-- **RDS PostgreSQL** - Database instance (db.t3.micro)
-- **Application Load Balancer** - Routes traffic to services
-- **Security Groups** - Network security rules
-- **IAM Role** - Task execution role for ECS
-
-### Cost Estimate
-
-- RDS db.t3.micro: ~$15/month
-- ECS Fargate (2 tasks): ~$15/month
-- ALB: ~$16/month
-- **Total: ~$46/month**
-
-**Important:** Destroy resources when not in use:
+### Cloud deploy (one command)
+Prereqs: Terraform, AWS CLI (creds configured), Docker with buildx, AWS account.
 ```bash
-terraform destroy
+bash deploy.sh
 ```
+Script does:
+1) `terraform apply` (creates ECR, ALB, ECS, RDS, SGs).  
+2) Build/push multi-arch images; frontend baked with `VITE_API_URL` set to the ALB DNS.  
+3) Force ECS rolling deploy and wait for services-stable.  
+Output prints `http://<alb-dns>`.
 
-## License
+DB init (first deploy): exec into backend task and run `python init_db.py`, e.g.  
+`aws ecs execute-command --cluster <cluster> --task <task-id> --container backend --command "python init_db.py" --interactive --region <region>`
 
-This project is created for educational purposes as part of CIS1912 DevOps course.
+### What to test / verify
+- Health: `curl http://<alb-dns>/api/health`
+- Frontend API calls: open the ALB URL in browser; network calls should hit `http://<alb-dns>/api/...` (no localhost, no double `/api`).
+- Target health: `aws elbv2 describe-target-health` for frontend/backend target groups.
 
-## Author
-
-Created for CIS1912 Final Project - Expense Tracker Application
+## Notes
+- Multi-arch images are built for amd64/arm64 to satisfy Fargate pulls.
+- `terraform/ecs.tf` sets `VITE_API_URL` to the ALB root; the frontend code adds `/api` per call.
+- Costs apply when cloud resources run; `terraform destroy` to clean up.***
