@@ -108,6 +108,12 @@ Required GitHub Secrets:
 - `AWS_ACCESS_KEY_ID`
 - `AWS_SECRET_ACCESS_KEY`
 
+**Accessing the Application:**
+
+After deployment, access the application at:
+- **Application URL**: http://expense-tracker-alb-1155641167.us-east-1.elb.amazonaws.com
+- **API Health Check**: http://expense-tracker-alb-1155641167.us-east-1.elb.amazonaws.com/api/health
+
 **Database Initialization:**
 
 After first deployment, initialize the database:
