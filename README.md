@@ -2,65 +2,58 @@
 
 ## Project Overview
 
-This project is a full-stack expense tracking application deployed on AWS using Infrastructure as Code (IaC). The application allows users to track expenses by category, view summaries, and manage their spending data through a React-based frontend and Flask REST API backend.
+Full-stack expense tracking application deployed on AWS. Users can track expenses by category, view summaries, and manage spending data. Built with React frontend and Flask REST API backend.
 
-## People in the group
+## Authors
 Benjamin Xu
+
 David Zhan
+
 Zihao Zhou
 
 ### DevOps Accomplishments
 
-The primary focus of this project was implementing a complete DevOps pipeline and cloud infrastructure:
+- **Infrastructure as Code**: AWS infrastructure defined in Terraform (VPC, ECS Fargate, ALB, RDS, ECR, IAM, security groups)
+- **Containerization**: Multi-stage Docker builds for frontend and backend
+- **Multi-architecture Support**: Images built for amd64 and arm64
+- **CI/CD Pipeline**: GitHub Actions workflow for automated deployments on push to main
+- **Load Balancing**: ALB with path-based routing (`/api/*` to backend, default to frontend)
+- **Health Checks**: Container health checks for both services
+- **Security**: Security groups with least-privilege access (ALB → ECS → RDS)
 
-- **Infrastructure as Code**: Entire AWS infrastructure defined in Terraform, including VPC networking, ECS Fargate services, Application Load Balancer (ALB), RDS PostgreSQL database, ECR repositories, IAM roles, and security groups
-- **Containerization**: Multi-stage Docker builds for both frontend and backend services, optimized for production
-- **Multi-architecture Support**: Docker images built for both amd64 and arm64 architectures to support Fargate's architecture requirements
-- **Automated Deployment**: Single-command deployment script (`deploy.sh`) that provisions infrastructure, builds and pushes container images, and deploys to ECS
-- **Load Balancing & Routing**: ALB configured with path-based routing (`/api/*` to backend, default to frontend)
-- **Health Checks**: Container health checks configured for both services with proper startup periods
-- **Security**: Security groups configured with least-privilege access (ALB → ECS → RDS)
-- **Local Development**: Docker Compose setup for local development and testing
-
-## High-Level Code Structure
+## Code Structure
 
 ### Infrastructure (Terraform)
 
-The infrastructure is organized into modular Terraform files:
-
-- **`main.tf`**: Provider configuration, VPC/subnet data sources, and ECS cluster
-- **`alb.tf`**: Application Load Balancer, target groups for frontend/backend, listener rules for API routing
-- **`ecs.tf`**: ECS task definitions and services for both frontend and backend containers
-- **`rds.tf`**: PostgreSQL database instance and subnet group
-- **`ecr.tf`**: Container registries for backend and frontend images
-- **`iam.tf`**: IAM role and policies for ECS task execution
-- **`security.tf`**: Security groups for ALB, ECS, and RDS with appropriate ingress/egress rules
-- **`variables.tf`**: Input variables for configuration
-- **`outputs.tf`**: Output values for deployment script integration
+- **`main.tf`**: Provider config, VPC/subnet data sources, ECS cluster
+- **`alb.tf`**: ALB, target groups, listener rules for routing
+- **`ecs.tf`**: ECS task definitions and services
+- **`rds.tf`**: PostgreSQL instance and subnet group
+- **`ecr.tf`**: ECR repositories for container images
+- **`iam.tf`**: IAM role for ECS task execution
+- **`security.tf`**: Security groups for ALB, ECS, RDS
+- **`variables.tf`**: Input variables
+- **`outputs.tf`**: Output values
 
 ### Application Code
 
 **Backend (`backend/`)**:
-- **`app.py`**: Flask application factory, CORS configuration, database initialization
-- **`routes.py`**: REST API endpoints for expenses (GET, POST, DELETE) and summary
+- **`app.py`**: Flask app factory, CORS, database init
+- **`routes.py`**: REST API endpoints (expenses, summary)
 - **`models.py`**: SQLAlchemy Expense model
-- **`config.py`**: Configuration management with environment variable support
-- **`init_db.py`**: Database initialization script
-- **`Dockerfile`**: Multi-stage build with Python dependencies and PostgreSQL client tools
+- **`config.py`**: Environment variable configuration
+- **`init_db.py`**: Database initialization
+- **`Dockerfile`**: Python base image with dependencies
 
 **Frontend (`frontend/`)**:
-- **`src/App.jsx`**: Main application component
-- **`src/components/`**: React components for expense list, form, filtering, and summary
-- **`src/services/api.js`**: Axios client for API communication
-- **`Dockerfile`**: Multi-stage build (Node.js builder → nginx production server)
+- **`src/App.jsx`**: Main component
+- **`src/components/`**: Expense list, form, filter, summary components
+- **`src/services/api.js`**: Axios API client
+- **`Dockerfile`**: Multi-stage build (Node.js → nginx)
 
 **Deployment**:
-- **`deploy.sh`**: Automated deployment script that:
-  1. Applies Terraform infrastructure
-  2. Logs into ECR
-  3. Builds and pushes multi-arch images
-  4. Forces ECS service updates
-  5. Waits for services to stabilize
+- **`deploy.sh`**: Initial infrastructure setup (run once)
+- **`.github/workflows/deploy.yml`**: CI/CD workflow
 
 ## How to Test and View
 
@@ -72,8 +65,6 @@ The infrastructure is organized into modular Terraform files:
 - Docker buildx (for multi-arch builds)
 
 ### Local Development
-
-**Option 1: Docker Compose (Recommended)**
 
 ```bash
 docker-compose up --build
@@ -88,49 +79,42 @@ Stop services:
 docker-compose down
 ```
 
-**Option 2: Separate Services**
-
-Backend:
-```bash
-cd backend
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-export DATABASE_URL=postgresql://expense_user:expense_password@localhost:5433/expense_tracker
-python init_db.py
-python app.py
-```
-
-Frontend:
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
 ### Cloud Deployment
 
-**One-Command Deployment:**
+**Initial Infrastructure Setup:**
+
+The `deploy.sh` script is used only for initial AWS resource provisioning. Run it once to set up infrastructure:
 
 ```bash
 bash deploy.sh
 ```
 
-The script will:
-1. Provision all AWS infrastructure via Terraform
-2. Build and push multi-architecture Docker images to ECR
-3. Deploy services to ECS Fargate
-4. Output the ALB DNS name for accessing the application
+This script:
+1. Applies Terraform to create AWS resources (ALB, ECS, RDS, ECR, security groups)
+2. Builds and pushes multi-architecture Docker images to ECR
+3. Deploys services to ECS Fargate
+4. Outputs the ALB DNS name
 
-**First-Time Database Setup:**
+**CI/CD Pipeline:**
 
-After initial deployment, initialize the database:
+After initial setup, deployments are automated via GitHub Actions. The workflow (`.github/workflows/deploy.yml`) triggers on pushes to the `main` branch:
+
+1. Builds and pushes Docker images to ECR
+2. Updates ECS services with new images
+3. Waits for services to stabilize
+4. Outputs the ALB DNS name
+
+Required GitHub Secrets:
+- `AWS_ACCESS_KEY_ID`
+- `AWS_SECRET_ACCESS_KEY`
+
+**Database Initialization:**
+
+After first deployment, initialize the database:
 
 ```bash
-# Get cluster and task info
 aws ecs list-tasks --cluster expense-tracker-cluster --service-name expense-tracker-backend-service --region us-east-1
 
-# Run database initialization
 aws ecs execute-command \
   --cluster expense-tracker-cluster \
   --task <task-id> \
@@ -140,36 +124,42 @@ aws ecs execute-command \
   --region us-east-1
 ```
 
-### Verification and Testing
+### Debugging
 
-**Health Check:**
+**Check service status:**
 ```bash
-curl http://<alb-dns>/api/health
-```
-d
-**Test API Endpoints:**
-```bash
-# Get all expenses
-curl http://<alb-dns>/api/expenses
-
-# Create expense
-curl -X POST http://<alb-dns>/api/expenses \
-  -H "Content-Type: application/json" \
-  -d '{"amount": 25.50, "description": "Test expense", "category": "Food"}'
-
-# Get summary
-curl http://<alb-dns>/api/expenses/summary
+aws ecs describe-services \
+  --cluster expense-tracker-cluster \
+  --services expense-tracker-backend-service expense-tracker-frontend-service \
+  --region us-east-1 \
+  --query 'services[*].[serviceName,runningCount,desiredCount,status]' \
+  --output table
 ```
 
-**Check Service Health:**
+**Check target group health:**
 ```bash
-aws elbv2 describe-target-health \
-  --target-group-arn <target-group-arn> \
-  --region us-east-1
+BACKEND_TG=$(aws elbv2 describe-target-groups --region us-east-1 --names expense-tracker-backend-tg --query 'TargetGroups[0].TargetGroupArn' --output text)
+aws elbv2 describe-target-health --target-group-arn $BACKEND_TG --region us-east-1
 ```
 
-**View Application:**
-Open the ALB DNS name in your browser (printed by `deploy.sh`). The frontend will automatically route API calls to the backend via the ALB.
+**View logs:**
+```bash
+aws logs tail /ecs/expense-tracker-backend --follow --region us-east-1
+aws logs tail /ecs/expense-tracker-frontend --follow --region us-east-1
+```
+
+**Get ALB DNS name:**
+```bash
+cd terraform
+terraform output alb_dns_name
+```
+
+**Test API endpoints:**
+```bash
+ALB_DNS=$(cd terraform && terraform output -raw alb_dns_name)
+curl http://$ALB_DNS/api/health
+curl http://$ALB_DNS/api/expenses
+```
 
 ### Cleanup
 
