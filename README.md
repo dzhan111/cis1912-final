@@ -4,6 +4,11 @@
 
 This project is a full-stack expense tracking application deployed on AWS using Infrastructure as Code (IaC). The application allows users to track expenses by category, view summaries, and manage their spending data through a React-based frontend and Flask REST API backend.
 
+## People in the group
+Benjamin Xu
+David Zhan
+Zihao Zhou
+
 ### DevOps Accomplishments
 
 The primary focus of this project was implementing a complete DevOps pipeline and cloud infrastructure:
